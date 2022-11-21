@@ -1,1 +1,23 @@
+#uploadButton{
+  padding: 2em ;
+  border-width: 0px;
+  border-radius: 10%;
+  font-size: 150%;
+  width:auto;
+  height:auto;
+  background-color:lightgray;
+  color: blue;
+  display: inline-block;
+  font-weight: bold;
+  font-family: FUTURA;
+}
 
+#uploadButton:hover{
+  background-color: gray;
+  color:blue;
+}
+
+#uploadButton:active{
+  background-color: black;
+  color:blue;
+}
