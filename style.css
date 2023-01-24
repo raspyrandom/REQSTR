@@ -1,23 +1,66 @@
+body, html{
+  height:100%
+}
+
+.labels{
+  color: white;
+}
+
+#postImage{
+  color: white;
+}
+
 #uploadButton{
   padding: 1em ;
-  border-width: 0px;
-  border-radius: 10%;
-  font-size: 120%;
-  width:auto;
+  border-width: 0%;
+  border-radius: 30%;
+  border:0px;
+  font-size: 150%;
   height:auto;
-  background-color:lightgray;
-  color: blue;
+  background-color:rgba(0, 0, 0, 0.05);
+  color: #40be00;
   display: inline-block;
   font-weight: bold;
   font-family: FUTURA;
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 5%;
+  width: calc(90%);
 }
 
 #uploadButton:hover{
-  background-color: gray;
-  color:blue;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 #uploadButton:active{
-  background-color: black;
-  color:blue;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+body{
+    width:100%;
+    position: absolute;
+    background-image:url("REQSTR_Background.svg");
+}
+
+#title{
+  font-family: "MS Gothic";
+  color:white;
+  font-size: 70px;
+  position: relative;
+  top:auto;
+  
+}
+
+#logo{
+  position: absolute;
+  right:5%;
+  top:1%;
+  width: 10%;
+  height:auto;
+  opacity: .8;
+}
+
+#logo:hover{
+  opacity: 1;
 }
