@@ -22,7 +22,7 @@ body, html{
   display: inline-block;
   font-weight: bold;
   font-family: FUTURA;
-  position: absolute;
+  position: relative;
   left: 5%;
   right: 5%;
   bottom: 5%;
