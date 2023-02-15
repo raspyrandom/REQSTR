@@ -10,19 +10,23 @@
    href = "style.css" />
 </head>
 <body>
-  
+  <script>
+    
+    
+  </script>
   <img id="Background" >
   <script src="script.js" class="main_fade"></script>
   <p id= "title" class="main_fade">RE:QSTR</p>
 
   <img id="logo" src="logo_test.svg" onclick="history.go(0)">
 
-  <div></div>  
-    <form method="POST" enctype="multipart/form-data" action="/submit-form">
+  <div>
+    <form method="POST" enctype="multipart/form-data" action="/submit-form" onsubmit="setTimeout(function () { window.location.reload(); },500);">
       <label for="title" class="labels">Post Title (max length 15):</label><br>
       <input type="text" name="postTitle" maxlength="15">
       <input type="file" name="postImage" accept=".jpg,.jpeg">
-      <input type="submit" id="uploadButton" value="Submit">
+      <input type="submit" id="uploadButton" value="Submit" >
     </form>
+  </div>
 </body>
 </html>

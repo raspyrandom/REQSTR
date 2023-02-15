@@ -35,7 +35,7 @@ app.post('/submit-form', (req, res) => {
   let imageName = "./images/"+titleCurrent+".jpg";
   //...
   
-    res.redirect("https://reqstr-server.alexkomissarch1.repl.co/");
+    res.redirect('https://reqstr-server--alexkomissarch1.repl.co/ ');
   const targetPath = path.join(__dirname, imageName);
    fs.rename(tempPath, targetPath, err => {
         if (err) return handleError(err, res);
