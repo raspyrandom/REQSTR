@@ -4,14 +4,16 @@ const path = require('path');
 const fs = require('fs');
 
 //const parse = require('node-html-parser').parse;
-
+//just some definitions
 const router = express.Router();
 const app = express();
+//which folder to store the files
 const testFolder = "./uploads/";
+//port to be used
 const port=8000;
 
 
-//not used yet
+//not used yet, gonna be used to send the files back
 function fileLoop(){
   fs.readdir("./uploads/", (err, files) => {
     files.forEach(file => {
@@ -22,13 +24,16 @@ function fileLoop(){
 };
 
 
-
+//tells express which folder to look for html,css,js in
 app.use(express.static('views'));
+
 //storage parameters
 const storage = multer.diskStorage({
+  //shows multer where to put the images
   destination: function (req, file, cb) {
     cb(null, './uploads')
   },
+  //names the files
   filename: function (req, file, cb) {
     cb(null, String(req.body.postTitle+".jpg"))
   }
@@ -55,7 +60,7 @@ const storage = multer.diskStorage({
 }
 */
 
-//storeage thing neccicary for multer
+//storeage thing neccicary for multer doesn't need to be changed
 const upload = multer({ storage: storage });
 
 //uses the html
@@ -71,7 +76,10 @@ app.post('/submit-form', upload.single("postImage"), function (req, res, next) {
 })
 
 //i dont know but keep it like this
+
+//app.use executes the router function
 app.use('/', router);
+//app.listen listens on the port
 app.listen(process.env.port = port);
 
 console.log('Running at Port '+port);
