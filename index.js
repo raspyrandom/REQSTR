@@ -60,7 +60,7 @@ const storage = multer.diskStorage({
 }
 */
 
-// storeage thing neccicary for multer doesn't need to be changed
+// storage thing necessary for multer, doesn't need to be changed
 const upload = multer({ storage: storage });
 
 // uses the html
