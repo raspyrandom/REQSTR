@@ -51,19 +51,27 @@ function fileLoop(){
 });     
 }
 
-
+//(myarr.indexOf("turtles") > -1);
 // tells express which folder to look for html,css,js in
 app.use(express.static('views'));
+
 
 // storage parameters
 const storage = multer.diskStorage({
   // shows multer where to put the images
+  
   destination: function (req, file, cb) {
-    cb(null, './views/uploads')
+    cb(null, './views/uploads');
   },
   // names the files
   filename: function (req, file, cb) {
-    cb(null, String(req.body.postTitle+".jpg"))
+    if (fs.existsSync(path.join('./views/uploads',req.body.postTitle+".jpg"))) {
+      cb(null, false);
+    }
+    else{
+      cb(null, String(req.body.postTitle+".jpg"));
+      
+    }
   }
 });
 
@@ -73,8 +81,9 @@ app.use("/view-posts",(req, res)=> {
 });
 
 // storage thing necessary for multer, doesn't need to be changed
-const upload = multer({ storage: storage });
-
+const upload = multer({
+    storage: storage
+});
 // uses the html
 router.get('/',function(req,res){
 
