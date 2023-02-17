@@ -23,8 +23,14 @@
   <div>
     <form method="POST" enctype="multipart/form-data" action="/submit-form" onsubmit="">
       <label for="title" class="labels">Post Title (max length 15):</label><br>
-      <input type="text" name="postTitle" maxlength="15">
-      <input type="file" name="postImage" accept=".jpg,.jpeg">
+      <input type="text" name="postTitle" maxlength="15" required>
+      <input type="file" name="postImage" accept=".jpg,.jpeg" required>
+      <!--
+      <br>
+      <label for="title" class="labels">Post Text (max length 300):</label>
+      <br>
+      <textarea name="postText" maxlength="300" required></textarea>
+      //-->
       <input type="submit" id="uploadButton" value="Submit" >
     </form>
     <form action="/view-posts">
