@@ -77,7 +77,7 @@ const storage = multer.diskStorage({
   }
 });
 
-app.use("https://raspyrandom.github.io/REQSTR/views/view-posts",(req, res)=> {
+app.use("/REQSTR/views/view-posts",(req, res)=> {
   fileLoop();
   res.sendFile(path.join(__dirname+"imageView.html"));
 });
@@ -94,7 +94,7 @@ router.get('/',function(req,res){
 });
 
 // handles the image downloads
-app.post('https://raspyrandom.github.io/REQSTR/views/submit-form', upload.single("postImage"), function (req, res, next) {
+app.post('/REQSTR/views/submit-form', upload.single("postImage"), function (req, res, next) {
   res.sendFile(path.join(__dirname+"/views/index.html"));
   // req.file is the `submit-form` file
   // req.body will hold the text fields, if there were any
