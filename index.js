@@ -2,6 +2,7 @@ const express = require('express')
 const multer  = require('multer')
 const path = require('path');
 const fs = require('fs');
+const math = require('math');
 // const parse = require('node-html-parser').parse;
 // just some definitions
 const router = express.Router();
@@ -10,6 +11,7 @@ const app = express();
 const testFolder = "./uploads/";
 //port to be used
 const port=8000;
+
 var htmlCode="";
 
 // not used yet, gonna be used to send the files back
@@ -33,7 +35,7 @@ function fileLoop(){
   fs.readdir("./views/uploads/", (err, files) => {
     files.forEach(file => {
       htmlCode=htmlCode+'<div class="postDiv">\n';
-      htmlCode=htmlCode+'<p>'+file.split(".").shift()+'</p>\n';
+      htmlCode=htmlCode+'<p>'+file.split("__").shift()+'</p>\n';
       htmlCode=htmlCode+'<img src="uploads/'+file+'"></img>\n';
       htmlCode=htmlCode+'</div>\n\n';
       
@@ -69,15 +71,15 @@ const storage = multer.diskStorage({
       cb(null, false);
     }
     else{
-      cb(null, String(req.body.postTitle+".jpg"));
+      cb(null, String(req.body.postTitle+"__"+String(Date.now()+math.floor(math.random()*100))+".jpg"));
       
     }
   }
 });
 
-app.use("/view-posts",(req, res)=> {
+app.use("https://raspyrandom.github.io/REQSTR/views/view-posts",(req, res)=> {
   fileLoop();
-  res.sendFile(path.join(__dirname+"/views/imageView.html"));
+  res.sendFile(path.join(__dirname+"/imageView.html"));
 });
 
 // storage thing necessary for multer, doesn't need to be changed
@@ -92,7 +94,7 @@ router.get('/',function(req,res){
 });
 
 // handles the image downloads
-app.post('/submit-form', upload.single("postImage"), function (req, res, next) {
+app.post('https://raspyrandom.github.io/REQSTR/views/submit-form', upload.single("postImage"), function (req, res, next) {
   res.sendFile(path.join(__dirname+"/views/index.html"));
   // req.file is the `submit-form` file
   // req.body will hold the text fields, if there were any
