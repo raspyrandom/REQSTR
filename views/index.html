@@ -21,7 +21,7 @@
   <img id="logo" src="logo_test.svg" onclick="history.go(0)">
 
   <div>
-    <form method="POST" enctype="multipart/form-data" action="/submit-form" onsubmit="">
+    <form method="POST" enctype="multipart/form-data" action="/REQSTR/views/submit-form" onsubmit="">
       <label for="title" class="labels">Post Title (max length 15):</label><br>
       <input type="text" name="postTitle" maxlength="15" required>
       <input type="file" name="postImage" accept=".jpg,.jpeg" required>
@@ -33,7 +33,7 @@
       //-->
       <input type="submit" id="uploadButton" value="Submit" >
     </form>
-    <form action="/view-posts">
+    <form action="/REQSTR/views/view-posts">
       <input type="submit" value="view posts">
     </form>
   </div>
