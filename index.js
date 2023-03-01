@@ -2,6 +2,7 @@ const express = require('express')
 const multer  = require('multer')
 const path = require('path');
 const fs = require('fs');
+const math = require('math');
 // const parse = require('node-html-parser').parse;
 // just some definitions
 const router = express.Router();
@@ -11,6 +12,31 @@ const testFolder = "./uploads/";
 //port to be used
 const port=8000;
 var htmlCode="";
+
+
+function randomId(){
+  return String(Date.now() + math.floor(math.random()*1000))
+}
+
+
+function idData(name,id){
+  var obj = "";
+    fs.readFile('views/postData.json', 'utf8',function(err, data){
+        
+      obj = JSON.parse(data);
+  });
+  
+  obj.posts = obj.posts + {name:name,id:id};
+  obj2=JSON.stringify(obj);
+  fs.writeFile('views/postData.json', obj2,
+  function (err) {
+    if (err) throw err;
+    console.log('Saved!');
+  });
+  
+  return id;
+  
+}
 
 // not used yet, gonna be used to send the files back
 function fileLoop(){
@@ -65,15 +91,18 @@ const storage = multer.diskStorage({
   },
   // names the files
   filename: function (req, file, cb) {
-    if (fs.existsSync(path.join('./views/uploads',req.body.postTitle+".jpg"))) {
+    /*if (fs.existsSync(path.join('./views/uploads',req.body.postTitle+".jpg"))) {
       cb(null, false);
     }
     else{
       cb(null, String(req.body.postTitle+".jpg"));
       
     }
-  }
-});
+  }*/
+    idData(req.body.postTitle,randomId());
+    cb(null,String(idData(req.body.postTitle,randomId()))+".jpg");
+    
+}});
 
 app.use("/view-posts",(req, res)=> {
   fileLoop();
@@ -106,3 +135,4 @@ app.use('/', router);
 app.listen(process.env.port = port);
 
 console.log('Running at Port '+port);
+console.log(String(randomId()));
