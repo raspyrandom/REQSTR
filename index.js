@@ -79,7 +79,7 @@ const storage = multer.diskStorage({
 
 app.use("/REQSTR/views/view-posts",(req, res)=> {
   fileLoop();
-  res.sendFile("views/imageView.html");
+  res.sendFile("https://replit.com/@AlexKomissarch1/REQSTR-server#views/imageView.html");
 });
 
 // storage thing necessary for multer, doesn't need to be changed
