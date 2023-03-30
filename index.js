@@ -2,6 +2,9 @@ const express = require('express')
 const multer  = require('multer')
 const path = require('path');
 const fs = require('fs');
+const localtunnel = require('localtunnel');
+const QRCode = require('qrcode')
+
 // const parse = require('node-html-parser').parse;
 // just some definitions
 const router = express.Router();
@@ -66,9 +69,12 @@ const storage = multer.diskStorage({
   // names the files
   filename: function (req, file, cb) {
     if (fs.existsSync(path.join('./views/uploads',req.body.postTitle+".jpg"))) {
-      cb(null, false);
+      name=String(req.body.postTitle+"_"+Date.now()+".jpg");
+      cb(null, name);
+      
     }
     else{
+    
       cb(null, String(req.body.postTitle+".jpg"));
       
     }
@@ -106,3 +112,21 @@ app.use('/', router);
 app.listen(process.env.port = port);
 
 console.log('Running at Port '+port);
+
+
+
+(async () => {
+  const tunnel = await localtunnel({ port: 8000 });
+
+  // the assigned public url for your tunnel
+  // i.e. https://abcdefgjhij.localtunnel.me
+  QRCode.toFile('views/QRCODE.png', tunnel.url, function (err) {
+    if (err) throw err
+    console.log('done')
+  });
+  tunnel.url;
+
+  tunnel.on('close', () => {
+    // tunnels are closed
+  });
+})();
