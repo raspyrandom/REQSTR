@@ -55,6 +55,11 @@ function fileLoop(){
 // tells express which folder to look for html,css,js in
 app.use(express.static('views'));
 
+// returns random integer between 0 and max (exclusive)
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 // storage parameters
 const storage = multer.diskStorage({
   // shows multer where to put the images
@@ -63,7 +68,8 @@ const storage = multer.diskStorage({
   },
   // names the files
   filename: function (req, file, cb) {
-    cb(null, String(req.body.postTitle+".jpg"))
+    // postname-timestamp-randomnumber.jpg
+    cb(null, String(req.body.postTitle + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
   }
 });
 
