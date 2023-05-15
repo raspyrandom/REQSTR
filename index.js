@@ -14,6 +14,7 @@ var htmlCode="";
 
 // not used yet, gonna be used to send the files back
 function fileLoop(){
+  //I made the comment as an easter egg
   htmlCode="<html>"+
 "<head>"+
 "<title>Posts</title>"+
@@ -33,7 +34,7 @@ function fileLoop(){
   fs.readdir("./views/uploads/", (err, files) => {
     files.forEach(file => {
       htmlCode=htmlCode+'<div class="postDiv">\n';
-      htmlCode=htmlCode+'<p>'+file.split(".").shift()+'</p>\n';
+      htmlCode=htmlCode+'<p>'+file.split("-").shift()+'</p>\n';
       htmlCode=htmlCode+'<img src="uploads/'+file+'"></img>\n';
       htmlCode=htmlCode+'</div>\n\n';
       
@@ -69,7 +70,8 @@ const storage = multer.diskStorage({
   // names the files
   filename: function (req, file, cb) {
     // postname-timestamp-randomnumber.jpg
-    cb(null, String(req.body.postTitle + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
+    let title=req.body.postTitle.replace("-","_");
+    cb(null, String(title + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
   }
 });
 
@@ -89,7 +91,8 @@ router.get('/',function(req,res){
 });
 
 // handles the image downloads
-app.post('/submit-form', upload.single("postImage"), function (req, res, next) {req.body.postTitle
+app.post('/submit-form', upload.single("postImage"), function (req, res, next) {
+  
   res.sendFile(path.join(__dirname+"/views/index.html"));
   // req.file is the `submit-form` file
   // req.body will hold the text fields, if there were any
