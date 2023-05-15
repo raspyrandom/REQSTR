@@ -89,7 +89,7 @@ router.get('/',function(req,res){
 });
 
 // handles the image downloads
-app.post('/submit-form', upload.single("postImage"), function (req, res, next) {
+app.post('/submit-form', upload.single("postImage"), function (req, res, next) {req.body.postTitle
   res.sendFile(path.join(__dirname+"/views/index.html"));
   // req.file is the `submit-form` file
   // req.body will hold the text fields, if there were any
