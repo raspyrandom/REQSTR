@@ -243,4 +243,3 @@ app.listen(process.env.port = port);
 
 console.log(storage)
 console.log('\nRunning at Port '+port);
-console.log(photosStorage.getTruncatedPath())
