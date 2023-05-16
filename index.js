@@ -1,8 +1,10 @@
 // Imports
 const express = require('express')
 const multer  = require('multer')
-const path = require('path')
-const fs = require('fs')
+const path = require('path');
+const fs = require('fs');
+const localtunnel = require('localtunnel');
+const QRCode = require('qrcode')
 const assert = require('assert');
 
 console.log("Initializing server backend")
@@ -185,7 +187,7 @@ function fileLoop(){
 });     
 }
 
-
+//(myarr.indexOf("turtles") > -1);
 // tells express which folder to look for html,css,js in
 app.use(express.static('views'));
 
@@ -197,6 +199,7 @@ function getRandomInt(max) {
 // storage parameters
 photosStorage.file.multerStorage = multer.diskStorage({
   // shows multer where to put the images
+  
   destination: function (req, file, cb) {
     cb(null, photosStorage.path)
   },
@@ -245,4 +248,20 @@ app.use('/', router);
 app.listen(process.env.port = port);
 
 console.log(storage)
-console.log('\nRunning at Port '+port);
+console.log('Running at Port '+port);
+
+(async () => {
+  const tunnel = await localtunnel({ port: 8000 });
+
+  // the assigned public url for your tunnel
+  // i.e. https://abcdefgjhij.localtunnel.me
+  QRCode.toFile('views/QRCODE.png', tunnel.url, function (err) {
+    if (err) throw err
+    console.log('done')
+  });
+  tunnel.url;
+
+  tunnel.on('close', () => {
+    // tunnels are closed
+  });
+})();

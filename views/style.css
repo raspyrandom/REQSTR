@@ -5,6 +5,24 @@ body, html{
 .labels{
   color: white;
 }
+@keyframes loading {
+  0%   {background-color: red;}
+  50%  {background-color: yellow;}
+  100%   {background-color: red;}
+
+}
+
+#loadingLoop{
+  width: 25px;
+  height: 25px;
+  background-color: red;
+  animation-name: loading;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+}
+#info{
+  color:white;
+}
 
 #postImage{
   color: white;
