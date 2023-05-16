@@ -1,7 +1,98 @@
+// Imports
 const express = require('express')
 const multer  = require('multer')
-const path = require('path');
-const fs = require('fs');
+const path = require('path')
+const fs = require('fs')
+
+console.log("Initializing server backend")
+
+// Enums for the Storage class
+const AccessType = Object.freeze({
+	Public: Symbol("public"), // Access by externals allowed
+	Protected: Symbol("protected"), // Readable but not modifiable
+	Private: Symbol("private"), // Not accessible or readable in any way
+})
+
+const NodeType = Object.freeze({
+	File: Symbol("file"), // File - final node
+	Directory: Symbol("directory"), // Directory - contains other files/directories
+})
+
+// Stores files in a designated directory
+class Storage {
+	// Tree is an object with symbols denoting the file structure
+
+	name = ""
+	type = null
+	nodeType = null
+	access = null
+	children = null
+	path = null
+	file = null
+
+	// Path does not include own name
+	// Ex: "USER/documents/" if the root dir is USER/documents/posts
+	constructor (path, tree) {
+		this.name = tree.name
+		this.path = path + '/' + this.name
+		this.type = tree.type
+		this.nodeType = tree.nodeType
+		this.access = tree.access
+		console.log("\nConstructing Storage Node")
+		console.log(tree)
+		if (this.type == ".jpg" && this.nodeType == NodeType.Directory) {
+			this.file = new JpgPluralInterface(this.path, this.access)
+		}
+		if (tree.children == null) {
+			this.children = null
+			return
+		}
+		if (this.nodeType == NodeType.File) {
+			return
+		}
+		this.children = []
+		for (var i = 0; i < tree.children.length; i ++) {
+			var child = tree.children[i]
+			this.children.push(new Storage(this.path, child))
+		}
+	}
+
+	setName (name) {
+		this.path = this.path.subString(0, this.path.length - name.length)
+		this.path += name
+		this.name = name
+	}
+}
+
+class JpgPluralInterface {
+	multerStorage = null
+	access = null
+	path = null
+
+	constructor (path, access) {
+		this.path = path
+		this.access = access
+		this.multerStorage = null
+		console.log('jpgpluralinterface constructed')
+	}
+
+	defineMulterStorage(multerStorage) {
+		this.multerStorage = multerStorage
+	}
+	
+	addImage (path) {
+		if (this.access != AccessType.Public) {
+			throw new Error('Access denied')
+		}
+
+		if (this.type != ".jpg") {
+			throw new Error('Incorrect file type')
+		}
+
+		
+	}
+}
+
 // const parse = require('node-html-parser').parse;
 // just some definitions
 const router = express.Router();
@@ -11,6 +102,29 @@ const testFolder = "./uploads/";
 //port to be used
 const port=8000;
 var htmlCode="";
+tree = {
+	name: "posts",
+	type: "null",
+	nodeType: NodeType.Directory,
+	access: AccessType.Protected,
+	children: [
+		{
+			name: "photos",
+		 	type: ".jpg",
+			nodeType: NodeType.Directory,
+	 		access: AccessType.Public,
+			children: null
+		},
+		{
+			name: "metadata",
+		 	type: ".json",
+			nodeType: NodeType.File,
+	 		access: AccessType.Public,
+	 		children: null
+		}
+	]
+}
+var storage = new Storage("./views", tree)
 
 // not used yet, gonna be used to send the files back
 function fileLoop(){
@@ -27,7 +141,7 @@ function fileLoop(){
 "</head>\n"+
 "<body>\n\n"+
 '<form action="/">'+
-'<input type="submit" value="go back"\n>'
+'<input type="submit" value="Go back"\n>'
 "</form>\n\n";
   
   fs.readdir("./views/uploads/", (err, files) => {
@@ -61,15 +175,20 @@ function getRandomInt(max) {
 }
 
 // storage parameters
-const storage = multer.diskStorage({
+storage.children[0].file.multerStorage = multer.diskStorage({
   // shows multer where to put the images
   destination: function (req, file, cb) {
-    cb(null, './views/uploads')
+    cb(null, storage.children[0].path)
   },
   // names the files
   filename: function (req, file, cb) {
     // postname-timestamp-randomnumber.jpg
-    cb(null, String(req.body.postTitle + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
+		if (req.body.postTitle === "") {
+			cb(null, String("[untitled]" + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
+		}
+    else {
+			cb(null, String(req.body.postTitle + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
+		}
   }
 });
 
@@ -79,7 +198,7 @@ app.use("/view-posts",(req, res)=> {
 });
 
 // storage thing necessary for multer, doesn't need to be changed
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage.children[0].file.multerStorage });
 
 // uses the html
 router.get('/',function(req,res){
@@ -102,4 +221,4 @@ app.use('/', router);
 // app.listen listens on the port
 app.listen(process.env.port = port);
 
-console.log('Running at Port '+port);
+console.log('\nRunning at Port '+port);
