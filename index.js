@@ -148,6 +148,7 @@ assert(metadataStorage.name == "metadata")
 
 // Used to send the files back
 function fileLoop(){
+  //I made the comment as an easter egg
   htmlCode="<html>"+
 "<head>"+
 "<title>Posts</title>"+
@@ -166,7 +167,7 @@ function fileLoop(){
   fs.readdir(photosStorage.path, (err, files) => {
     files.forEach(file => {
       htmlCode=htmlCode+'<div class="postDiv">\n';
-      htmlCode=htmlCode+'<p>'+file.split(".").shift()+'</p>\n';
+      htmlCode=htmlCode+'<p>'+file.split("-").shift()+'</p>\n';
       htmlCode=htmlCode+'<img src="' + photosStorage.getTruncatedPath() + '/' + file + '"></img>\n';
       htmlCode=htmlCode+'</div>\n\n';
       
@@ -203,11 +204,13 @@ photosStorage.file.multerStorage = multer.diskStorage({
   filename: function (req, file, cb) {
 		// File name structure:
     // postname-timestamp-randomnumber.jpg
-		if (req.body.postTitle === "") {
+    let title = req.body.postTitle
+		if (title === "") {
 			cb(null, String("[untitled]" + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
 		}
     else {
-			cb(null, String(req.body.postTitle + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
+      title = title.replace("-","_");
+			cb(null, String(title + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
 		}
   }
 });
