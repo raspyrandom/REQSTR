@@ -1,0 +1,51 @@
+body, html {
+   padding: 0;
+   margin: 0;
+}
+
+.postTitle{
+	font-family: Garamond, Georgia, serif;
+  color:white;
+  font-size: 70px;
+	margin-top: 50px;
+	margin-bottom: 50px;
+}
+
+.postDescription{
+	font-family: Helvetica, Verdana, sans-serif;
+	color: #c0bfbc;
+	font-size: 30px;
+}
+
+.postDiv{
+	border-style: solid;
+	border-color: #c0bfbc;
+	border-width: 2px;
+	border-radius: 15px;
+	margin-top: 5%;
+	margin-left: auto;
+	margin-right: auto;
+	width: 94%;
+	color: solid white;
+	padding-left: 2.5%;
+	padding-right: 2.5%;
+	padding-bottom: 2.5%;
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.postImage{
+	display: block;
+	border-top: solid #dedfde;
+	border-radius: 15px;
+	width: 100%;
+}
+
+body{
+  width:100%;
+  position: absolute;
+  background-image: url("simpleBackground.jpg");
+}
+
+#returnButton{
+  color: #40be00;
+}
