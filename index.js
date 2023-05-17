@@ -36,6 +36,9 @@ class Storage {
 	removeTrailingSlash () {
 		if (this.path[this.path.length - 1] == "/" && this.nodeType == NodeType.File) {
 			this.path = this.path.slice(0, -1)
+			if (this.type != null) {
+				this.path = this.path + this.type
+			}
 		}
 	}
 
@@ -48,24 +51,30 @@ class Storage {
 		this.nodeType = tree.nodeType
 		this.access = tree.access
 		this.parent = parent
+		
 		console.log("\nConstructing Storage Node")
 		console.log(tree)
+		
+		this.children = []
+		if (tree.children != null) {
+			for (var i = 0; i < tree.children.length; i ++) {
+				var child = tree.children[i]
+				this.children.push(new Storage(this.path, child, this))
+			}
+		} else if (tree.children == null) {
+			this.children = null
+			this.removeTrailingSlash()
+		}
+		
+		if (this.nodeType == NodeType.File) {
+			this.removeTrailingSlash()
+		}
+		
 		if (this.type == ".jpg" && this.nodeType == NodeType.Directory) {
 			this.file = new JpgPluralInterface(this.path, this.access)
 		}
-		if (tree.children == null) {
-			this.children = null
-			this.removeTrailingSlash()
-			return
-		}
-		if (this.nodeType == NodeType.File) {
-			this.removeTrailingSlash()
-			return
-		}
-		this.children = []
-		for (var i = 0; i < tree.children.length; i ++) {
-			var child = tree.children[i]
-			this.children.push(new Storage(this.path, child, this))
+		if (this.type == ".json" && this.nodeType == NodeType.File) {
+			this.file = new JsonFileInterface(this.path, this.access)
 		}
 	}
 
@@ -101,6 +110,31 @@ class JpgPluralInterface {
 	}
 }
 
+class JsonFileInterface {
+	access = null
+	path = null
+
+	constructor (path, access) {
+		this.path = path
+		this.access = access
+		console.log('jsonfileinterface constructed')
+	}
+
+	getObject () {
+		return JSON.parse(fs.readFileSync(this.path))
+	}
+
+	setObject (object) {
+		fs.writeFileSync(this.path, JSON.stringify(object))
+	}
+
+	// Runs Operation on object, sets object to result of Operation
+	// Operation takes one input: Object
+	mutateObject(Operation) {
+		this.setObject(Operation(this.getObject()))
+	}
+}
+
 // const parse = require('node-html-parser').parse;
 // just some definitions
 const router = express.Router();
@@ -109,6 +143,7 @@ const app = express();
 //port to be used
 const port=8000;
 var htmlCode="";
+
 tree = {
 	name: "posts",
 	type: "null",
@@ -140,50 +175,50 @@ var metadataStorage = storage.children[1]
 assert(photosStorage.name == "photos")
 assert(metadataStorage.name == "metadata")
 
-
+console.log(metadataStorage.file.getObject())
 
 // Code beyond this point is significantly less abstract
 // And thus less readable
 // Procees with caution and thoroughness
 
 
+
+
+
 // Used to send the files back
 function fileLoop(){
   //I made the comment as an easter egg
-  htmlCode="<html>"+
-"<head>"+
-"<title>Posts</title>"+
-'<meta name="description" content="Our first page">'+
-'<meta name="keywords" content="html tutorial template">'+
-'<style>'+
-  'p{font-size:30px;}\n'+
-  '.postDiv{border-style:solid;border-color:gray;border-width:2px;border-radius:15px;margin-top:5%;}\n'+
-  'img{width:100%;border-top:solid #dedfde;border-radius:15px;}\n'+
-'</style>\n'+
-"</head>\n"+
-"<body>\n\n"+
-'<form action="/">'+
-'<input type="submit" value="Go back"\n>'
-"</form>\n\n";
-  fs.readdir(photosStorage.path, (err, files) => {
-    files.forEach(file => {
-      htmlCode=htmlCode+'<div class="postDiv">\n';
-      htmlCode=htmlCode+'<p>'+file.split("-").shift()+'</p>\n';
-      htmlCode=htmlCode+'<img src="' + photosStorage.getTruncatedPath() + '/' + file + '"></img>\n';
-      htmlCode=htmlCode+'</div>\n\n';
-      
-  });
-    htmlCode=htmlCode+"</body></html>";
-    fs.writeFile("./views/imageView.html", htmlCode, (err) => {
-  if (err)
-    console.log(err);
-  else {
-    console.log("File written successfully\n");
-    console.log("The written has the following contents:");
-    console.log(fs.readFileSync("./views/imageView.html", "utf8"));
-  }
-});
-});     
+  htmlCode = fs.readFileSync("views/imageViewTemplate.html")
+	
+	// Somehow, encapsulating the code in this irrelevant function makes it run, clientside!
+	// Please fix in 2024 :)
+	
+	// Start block
+	fs.readdir(photosStorage.path, (err, files) => {
+	
+	var posts = metadataStorage.file.getObject().posts
+	posts.forEach(post => {
+		console.log(post)
+		htmlCode = htmlCode + 
+			'	<div class="postDiv">\n'
+			+'	<p class=postTitle>' + post.title.split("-").shift() + '</p>\n'
+			+'	<p class=postDescription>' + post.description + '</p>\n'
+			+'	<img class=postImage src="' + photosStorage.getTruncatedPath() + '/' + post.fileName + '"></img>\n'
+			+'</div>\n\n';
+	})
+	htmlCode = htmlCode + "</body></html>";
+  fs.writeFile("./views/imageView.html", htmlCode, (err) => {
+  	if (err)
+    	console.log(err);
+  	else {
+	    console.log("File written successfully\n");
+	    console.log("The written has the following contents:");
+  	  console.log(fs.readFileSync("./views/imageView.html", "utf8"));
+	  }
+	});
+
+	// End block
+	});
 }
 
 //(myarr.indexOf("turtles") > -1);
@@ -206,14 +241,29 @@ photosStorage.file.multerStorage = multer.diskStorage({
   filename: function (req, file, cb) {
 		// File name structure:
     // postname-timestamp-randomnumber.jpg
-    let title = req.body.postTitle
+		let title = req.body.postTitle
 		if (title === "") {
-			cb(null, String("[untitled]" + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
+			title = "[untitled]" + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"
 		}
-    else {
-      title = title.replace("-","_");
-			cb(null, String(title + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"))
+	  else {
+	    title = title.replace("-","_");
+			title = title + '-' + Date.now() + '-' + getRandomInt(99999999) + ".jpg"
 		}
+		console.log(req.body)
+		metadataStorage.file.mutateObject((object => {
+			console.log("adding post")
+			console.log(req.body)
+			var nextPost = {
+				title: req.body.postTitle,
+				fileName: title,
+				description: req.body.postDescription
+			}
+			console.log(nextPost)
+			object.posts.push(nextPost)
+			return object
+		}))
+		
+    cb(null, title)
   }
 });
 
